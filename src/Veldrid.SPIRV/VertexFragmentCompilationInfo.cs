@@ -20,13 +20,6 @@ public class VertexFragmentCompilationResult
 
     internal VertexFragmentCompilationResult(
         string vertexCode,
-        string fragmentCode)
-        : this(vertexCode, fragmentCode, null)
-    {
-    }
-
-    internal VertexFragmentCompilationResult(
-        string vertexCode,
         string fragmentCode,
         SpirvReflection? reflection)
     {

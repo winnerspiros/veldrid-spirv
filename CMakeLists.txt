@@ -1,5 +1,4 @@
-cmake_minimum_required (VERSION 3.0)
-cmake_policy(SET CMP0057 NEW)
+cmake_minimum_required (VERSION 3.5...4.1)
 
 set(CMAKE_OSX_DEPLOYMENT_TARGET "10.15" CACHE STRING "Minimum OS X deployment version")
 
@@ -13,6 +12,7 @@ add_subdirectory(ext/SPIRV-Cross)
 
 set(SHADERC_SKIP_TESTS ON)
 set(SHADERC_SKIP_INSTALL ON)
+set(SHADERC_ENABLE_SHARED_CRT ON)
 add_subdirectory(ext/shaderc)
 
 set(CMAKE_CXX_STANDARD 17)
