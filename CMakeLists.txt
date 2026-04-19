@@ -12,6 +12,7 @@ add_subdirectory(ext/SPIRV-Cross)
 
 set(SHADERC_SKIP_TESTS ON)
 set(SHADERC_SKIP_INSTALL ON)
+set(SHADERC_ENABLE_SHARED_CRT ON)
 add_subdirectory(ext/shaderc)
 
 set(CMAKE_CXX_STANDARD 17)
