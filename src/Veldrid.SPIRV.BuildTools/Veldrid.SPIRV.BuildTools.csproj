@@ -1,9 +1,9 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp2.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <IncludeBuildOutput>false</IncludeBuildOutput>
-    <PublishedToolPath>$([System.IO.Path]::GetFullPath('$(RepositoryRootDirectory)bin\$(Configuration)'))\Veldrid.SPIRV.VariantCompiler\netcoreapp2.2\publish</PublishedToolPath>
+    <PublishedToolPath>$([System.IO.Path]::GetFullPath('$(RepositoryRootDirectory)bin\$(Configuration)'))\Veldrid.SPIRV.VariantCompiler\net10.0\publish</PublishedToolPath>
 
     <!-- Nuget info -->
     <PackageId>Veldrid.SPIRV.BuildTools</PackageId>

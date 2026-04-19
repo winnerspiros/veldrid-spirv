@@ -7,18 +7,21 @@
     <OutputPath>$([System.IO.Path]::GetFullPath('$(RepositoryRootDirectory)bin\$(Configuration)'))\$(MSBuildProjectName)</OutputPath>
     <BaseIntermediateOutputPath>$([System.IO.Path]::GetFullPath('$(RepositoryRootDirectory)bin\obj\$(MSBuildProjectName)'))\</BaseIntermediateOutputPath>
     <PackageOutputPath>$(BinDir)\Packages\$(Configuration)</PackageOutputPath>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
   <PropertyGroup>
-    <PackageLicenseUrl>https://raw.githubusercontent.com/mellinoe/veldrid-spirv/master/LICENSE</PackageLicenseUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <Copyright>Copyright 2019 (c) Eric Mellino. All rights reserved.</Copyright>
     <Authors>Eric Mellino</Authors>
-    <RepositoryUrl>https://github.com/mellinoe/veldrid-spirv</RepositoryUrl>
+    <RepositoryUrl>https://github.com/winnerspiros/veldrid-spirv</RepositoryUrl>
   </PropertyGroup>
 
   <PropertyGroup>
-    <NerdbankGitVersioningVersion>3.4.255</NerdbankGitVersioningVersion>
+    <NerdbankGitVersioningVersion>3.9.50</NerdbankGitVersioningVersion>
   </PropertyGroup>
 
   <ItemGroup>
