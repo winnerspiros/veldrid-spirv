@@ -37,6 +37,12 @@ target_link_libraries(veldrid-spirv
     shaderc
 )
 
+# Android 16 (API level 36+) requires 16 KB page size alignment for shared libraries.
+# Apply max-page-size=16384 linker flag for all Android builds.
+if(ANDROID)
+    target_link_options(veldrid-spirv PRIVATE "-Wl,-z,max-page-size=16384")
+endif()
+
 # macOS builds are expected to be dynamic libraries rather than frameworks,
 # only output frameworks for iOS builds.
 if(IOS)
