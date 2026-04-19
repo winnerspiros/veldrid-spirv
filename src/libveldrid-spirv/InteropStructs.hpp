@@ -1,20 +1,23 @@
 #pragma once
 
-#include "stdint.h"
+#include <cstdint>
+#include <cstring>
+#include <string>
+#include <tuple>
+#include <utility>
 #include <vector>
 #include "spirv_common.hpp"
 #include "shaderc.hpp"
-#include <assert.h>
 
 namespace Veldrid
 {
 #pragma pack(push, 1)
 struct Bool32
 {
-    uint32_t Value;
+    uint32_t Value = 0;
     operator bool() const { return Value != 0; }
-    Bool32() {}
-    Bool32(bool value) { Value = value ? 1 : 0; }
+    Bool32() = default;
+    Bool32(bool value) : Value(value ? 1u : 0u) {}
 };
 #pragma pack(pop)
 
@@ -22,45 +25,38 @@ struct Bool32
 template <typename T>
 struct InteropArray
 {
+    uint32_t Count = 0;
+    T *Data = nullptr;
+
     uint32_t SizeInBytes() const { return Count * sizeof(T); }
-    uint32_t Count;
-    T *Data;
 
     T &operator[](uint32_t i) { return Data[i]; }
-
     const T &operator[](uint32_t i) const { return Data[i]; }
 
-    InteropArray()
-    {
-        Count = 0;
-        Data = nullptr;
-    }
+    InteropArray() = default;
 
-    InteropArray(uint32_t count)
-    {
-        Count = count;
-        Data = new T[Count];
-    }
+    explicit InteropArray(uint32_t count)
+        : Count(count), Data(new T[count]) {}
 
-    InteropArray(uint32_t count, T *data) { CopyFrom(count, data); }
+    InteropArray(uint32_t count, const T *data)
+    {
+        CopyFrom(count, data);
+    }
 
     InteropArray(const InteropArray &other)
+        : Count(other.Count), Data(new T[other.Count])
     {
-        Count = other.Count;
-        Data = new T[Count];
-        memcpy(Data, other.Data, Count * sizeof(T));
+        std::memcpy(Data, other.Data, Count * sizeof(T));
     }
 
-    InteropArray(InteropArray &&other)
+    InteropArray(InteropArray &&other) noexcept
+        : Count(other.Count), Data(other.Data)
     {
-        Count = other.Count;
-        Data = other.Data;
-
         other.Count = 0;
         other.Data = nullptr;
     }
 
-    InteropArray &operator=(InteropArray other)
+    InteropArray &operator=(InteropArray other) noexcept
     {
         Count = other.Count;
         std::swap(Data, other.Data);
@@ -69,33 +65,22 @@ struct InteropArray
 
     ~InteropArray()
     {
-        if (Data != nullptr)
-        {
-            delete[] Data;
-        }
+        delete[] Data;
     }
 
     void Resize(uint32_t newCount)
     {
-        if (Data != nullptr)
-        {
-            delete[] Data;
-        }
-
+        delete[] Data;
         Count = newCount;
         Data = new T[newCount];
     }
 
     void CopyFrom(uint32_t count, const T* data)
     {
-        if (Data != nullptr)
-        {
-            delete[] Data;
-        }
-
+        delete[] Data;
         Count = count;
         Data = new T[count];
-        memcpy(Data, data, count * sizeof(T));
+        std::memcpy(Data, data, count * sizeof(T));
     }
 };
 #pragma pack(pop)
@@ -199,7 +184,7 @@ enum class VertexElementFormat : uint8_t
 
 struct VertexElementDescription
 {
-    InteropArray<char> Name = InteropArray<char>();
+    InteropArray<char> Name;
     VertexElementSemantic Semantic = VertexElementSemantic::Position;
     VertexElementFormat Format = VertexElementFormat::Float1;
     uint32_t Offset = 0;
@@ -216,7 +201,7 @@ enum class ShaderStages : uint8_t
     Compute = 32
 };
 
-static inline ShaderStages operator|(ShaderStages left, ShaderStages right)
+inline ShaderStages operator|(ShaderStages left, ShaderStages right)
 {
     return static_cast<ShaderStages>(static_cast<uint8_t>(left) | static_cast<uint8_t>(right));
 }
@@ -256,18 +241,15 @@ struct CompilationResult
     InteropArray<InteropArray<uint8_t>> DataBuffers;
     ReflectionInfo Reflection;
 
-    CompilationResult()
-    {
-        Succeeded.Value = 0;
-        DataBuffers.Count = 0;
-        DataBuffers.Data = nullptr;
-    }
+    CompilationResult() = default;
 
-    CompilationResult(const std::string& errorMessage)
+    explicit CompilationResult(const std::string& errorMessage)
     {
         Succeeded.Value = 0;
         DataBuffers.Resize(1);
-        DataBuffers[0].CopyFrom(static_cast<uint32_t>(errorMessage.length()), (uint8_t*)(errorMessage.c_str()));
+        DataBuffers[0].CopyFrom(
+            static_cast<uint32_t>(errorMessage.length()),
+            reinterpret_cast<const uint8_t*>(errorMessage.c_str()));
     }
 };
 #pragma pack(pop)
