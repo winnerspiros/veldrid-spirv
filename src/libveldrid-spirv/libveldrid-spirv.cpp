@@ -10,6 +10,7 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <tuple>
 #include <vector>
 #include "spirv_hlsl.hpp"
@@ -244,11 +245,12 @@ void SetSpecializations(spirv_cross::Compiler *compiler, const CrossCompileInfo 
         uint32_t constID = info.Specializations[i].ID;
         uint32_t varID = 0;
 
-        for (auto &constant : specConstants)
+        for (const auto &constant : specConstants)
         {
             if (constant.constant_id == constID)
             {
                 varID = constant.id;
+                break;
             }
         }
 
@@ -309,6 +311,15 @@ InteropArray<ResourceLayoutDescription> CreateResourceLayoutArray(
     }
 
     return ret;
+}
+
+// Length of "#version NNN" strings used in version replacement below.
+constexpr size_t kVersionDirectiveLen = 12;
+
+void ReplaceGlslVersion(std::string &shaderText, std::string_view from, std::string_view to)
+{
+    if (auto idx = shaderText.find(from); idx != std::string::npos)
+        shaderText.replace(idx, kVersionDirectiveLen, to);
 }
 
 CompilationResult *CompileVertexFragment(const CrossCompileInfo &info)
@@ -435,29 +446,17 @@ CompilationResult *CompileVertexFragment(const CrossCompileInfo &info)
 
     bool usesStorageResource = !vsResources.storage_buffers.empty() || !vsResources.storage_images.empty();
     if (info.Target == GLSL && usesStorageResource)
-    {
-        if (auto idx = vsText.find("#version 330"); idx != std::string::npos)
-            vsText.replace(idx, 12, "#version 430");
-    }
+        ReplaceGlslVersion(vsText, "#version 330", "#version 430");
     else if (info.Target == ESSL && usesStorageResource)
-    {
-        if (auto idx = vsText.find("#version 300"); idx != std::string::npos)
-            vsText.replace(idx, 12, "#version 310");
-    }
+        ReplaceGlslVersion(vsText, "#version 300", "#version 310");
 
     std::string fsText = fsCompiler->compile();
 
     usesStorageResource = !fsResources.storage_buffers.empty() || !fsResources.storage_images.empty();
     if (info.Target == GLSL && usesStorageResource)
-    {
-        if (auto idx = fsText.find("#version 330"); idx != std::string::npos)
-            fsText.replace(idx, 12, "#version 430");
-    }
+        ReplaceGlslVersion(fsText, "#version 330", "#version 430");
     else if (info.Target == ESSL && usesStorageResource)
-    {
-        if (auto idx = fsText.find("#version 300"); idx != std::string::npos)
-            fsText.replace(idx, 12, "#version 310");
-    }
+        ReplaceGlslVersion(fsText, "#version 300", "#version 310");
 
     auto *result = new CompilationResult();
     result->Succeeded = true;

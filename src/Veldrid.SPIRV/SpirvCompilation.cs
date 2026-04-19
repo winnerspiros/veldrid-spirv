@@ -10,7 +10,9 @@ namespace Veldrid.SPIRV;
 public static partial class SpirvCompilation
 {
     /// <summary>
-    /// Maximum size in bytes for stackalloc allocations before falling back to heap allocation.
+    /// Maximum size in bytes for stackalloc allocations before falling back to ArrayPool heap allocation.
+    /// Chosen to stay well within typical stack frame limits while avoiding heap allocation for common inputs
+    /// (e.g., a handful of specialization constants or small macro sets).
     /// </summary>
     private const int MaxStackAllocSize = 1024;
 
