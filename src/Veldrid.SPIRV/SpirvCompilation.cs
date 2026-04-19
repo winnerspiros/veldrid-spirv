@@ -112,7 +112,7 @@ public static partial class SpirvCompilation
                 if (!result->Succeeded)
                 {
                     throw new SpirvCompilationException(
-                        "Compilation failed: " + Util.GetString((byte*)result->GetData(0), result->GetLength(0)));
+                        $"Compilation failed: {Util.GetString((byte*)result->GetData(0), result->GetLength(0))}");
                 }
 
                 string vsCode = Util.GetString((byte*)result->GetData(0), result->GetLength(0))!;
@@ -156,7 +156,7 @@ public static partial class SpirvCompilation
             }
             finally
             {
-                if (result != null)
+                if (result is not null)
                 {
                     VeldridSpirvNative.FreeResult(result);
                 }
@@ -233,7 +233,7 @@ public static partial class SpirvCompilation
                 if (!result->Succeeded)
                 {
                     throw new SpirvCompilationException(
-                        "Compilation failed: " + Util.GetString((byte*)result->GetData(0), result->GetLength(0)));
+                        $"Compilation failed: {Util.GetString((byte*)result->GetData(0), result->GetLength(0))}");
                 }
 
                 string csCode = Util.GetString((byte*)result->GetData(0), result->GetLength(0))!;
@@ -264,7 +264,7 @@ public static partial class SpirvCompilation
             }
             finally
             {
-                if (result != null)
+                if (result is not null)
                 {
                     VeldridSpirvNative.FreeResult(result);
                 }
@@ -344,7 +344,7 @@ public static partial class SpirvCompilation
             if (!result->Succeeded)
             {
                 SpirvCompilationException ex = new(
-                    "Compilation failed: " + Util.GetString((byte*)result->GetData(0), result->GetLength(0)));
+                    $"Compilation failed: {Util.GetString((byte*)result->GetData(0), result->GetLength(0))}");
 
                 MatchCollection mc = LineNumberRegex().Matches(ex.Message);
                 if (mc.Count != 0)
@@ -367,7 +367,7 @@ public static partial class SpirvCompilation
         }
         finally
         {
-            if (result != null)
+            if (result is not null)
             {
                 VeldridSpirvNative.FreeResult(result);
             }

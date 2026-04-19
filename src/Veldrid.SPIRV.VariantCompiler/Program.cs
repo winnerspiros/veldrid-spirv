@@ -47,11 +47,7 @@ public class Program
         VariantCompiler compiler = new(new List<string>(SearchPaths), OutputPath);
         foreach (ShaderVariantDescription desc in descs)
         {
-            string[] newPaths = compiler.Compile(desc);
-            foreach (string s in newPaths)
-            {
-                generatedPaths.Add(s);
-            }
+            generatedPaths.UnionWith(compiler.Compile(desc));
         }
 
         string generatedFilesListText = string.Join(Environment.NewLine, generatedPaths);

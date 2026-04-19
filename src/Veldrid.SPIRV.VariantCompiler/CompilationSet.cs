@@ -72,7 +72,7 @@ public class VariantCompiler
         byte[]? fsBytes = null;
 
         string? vertexFileName = variant.Shaders.FirstOrDefault(vsd => vsd.Stage == ShaderStages.Vertex)?.FileName;
-        if (vertexFileName != null)
+        if (vertexFileName is not null)
         {
             try
             {
@@ -88,7 +88,7 @@ public class VariantCompiler
         }
 
         string? fragmentFileName = variant.Shaders.FirstOrDefault(vsd => vsd.Stage == ShaderStages.Fragment)?.FileName;
-        if (fragmentFileName != null)
+        if (fragmentFileName is not null)
         {
             try
             {
@@ -184,14 +184,12 @@ public class VariantCompiler
         return result.SpirvBytes;
     }
 
-    private static GlslCompileOptions GetOptions(ShaderVariantDescription variant)
-    {
-        return new GlslCompileOptions(false, variant.Macros);
-    }
+    private static GlslCompileOptions GetOptions(ShaderVariantDescription variant) =>
+        new(false, variant.Macros);
 
     private string? LoadGlsl(string? fileName)
     {
-        if (fileName == null) { return null; }
+        if (fileName is null) { return null; }
 
         foreach (string searchPath in _shaderSearchPaths)
         {

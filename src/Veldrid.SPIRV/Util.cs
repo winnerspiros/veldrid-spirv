@@ -6,7 +6,7 @@ internal static class Util
 {
     internal static unsafe string? GetString(byte* data, uint length)
     {
-        if (data == null) return null;
+        if (data is null) return null;
 
         return Encoding.UTF8.GetString(data, (int)length);
     }
