@@ -100,7 +100,7 @@ jobs:
               zip -r ${{ matrix.artifact_name }} veldrid-spirv.xcframework
 
       - name: Upload ${{ matrix.build_target }} Native Library
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: ${{ matrix.build_target }}
           path: ${{ matrix.artifact_name }}
@@ -131,67 +131,67 @@ jobs:
           fetch-depth: 0
 
       - name: Download win-x64
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
         with:
           name: win-x64
           path: build/Release/win-x64
 
       - name: Download win-x86
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
         with:
           name: win-x86
           path: build/Release/win-x86
 
       - name: Download win-arm64
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
         with:
           name: win-arm64
           path: build/Release/win-arm64
 
       - name: Download android-arm64-v8a
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
         with:
           name: android-arm64-v8a
           path: build/Release/android-arm64-v8a
 
       - name: Download android-x86_64
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
         with:
           name: android-x86_64
           path: build/Release/android-x86_64
 
       - name: Download android-x86
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
         with:
           name: android-x86
           path: build/Release/android-x86
 
       - name: Download android-armeabi-v7a
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
         with:
           name: android-armeabi-v7a
           path: build/Release/android-armeabi-v7a
 
       - name: Download linux-x64
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
         with:
           name: linux-x64
           path: build/Release/linux-x64
 
       - name: Download linux-arm64
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
         with:
           name: linux-arm64
           path: build/Release/linux-arm64
 
       - name: Download osx
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
         with:
           name: osx
           path: build/Release/osx
 
       - name: Download ios
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
         with:
           name: ios
           path: build/Release/ios
@@ -213,7 +213,7 @@ jobs:
         run: dotnet pack src/Veldrid.SPIRV -c Release --no-restore
 
       - name: Upload NuGet Package
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: nuget_package
           path: bin\Packages\Release\*.nupkg
