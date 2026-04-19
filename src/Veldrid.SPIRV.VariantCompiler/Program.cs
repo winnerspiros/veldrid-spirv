@@ -28,20 +28,24 @@ public class Program
         }
 
         ShaderVariantDescription[]? descs;
-        JsonSerializer serializer = new();
-        serializer.Formatting = Formatting.Indented;
-        StringEnumConverter enumConverter = new();
-        serializer.Converters.Add(enumConverter);
+        JsonSerializer serializer = new() { Formatting = Formatting.Indented };
+        serializer.Converters.Add(new StringEnumConverter());
         using (StreamReader sr = File.OpenText(SetDefinitionPath))
         using (JsonTextReader jtr = new(sr))
         {
             descs = serializer.Deserialize<ShaderVariantDescription[]>(jtr);
         }
 
+        if (descs is null || descs.Length == 0)
+        {
+            Console.Error.WriteLine("No shader variant descriptions found in the set definition file.");
+            return;
+        }
+
         HashSet<string> generatedPaths = [];
 
         VariantCompiler compiler = new(new List<string>(SearchPaths), OutputPath);
-        foreach (ShaderVariantDescription desc in descs!)
+        foreach (ShaderVariantDescription desc in descs)
         {
             string[] newPaths = compiler.Compile(desc);
             foreach (string s in newPaths)

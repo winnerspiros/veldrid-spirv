@@ -46,39 +46,11 @@ public class CrossCompileOptions
     /// fixup at the end of the vertex shader.</param>
     /// <param name="invertVertexOutputY">Indicates whether or not the compiled shader output should include a fixup at the
     /// end of the vertex shader which inverts the clip-space Y value.</param>
-    public CrossCompileOptions(bool fixClipSpaceZ, bool invertVertexOutputY)
-        : this(fixClipSpaceZ, invertVertexOutputY, [])
-    {
-    }
-
-    /// <summary>
-    /// Constructs a new <see cref="CrossCompileOptions"/>, used to control the parameters of shader translation.
-    /// </summary>
-    /// <param name="fixClipSpaceZ">Indicates whether or not the compiled shader output should include a clip-space Z-range
-    /// fixup at the end of the vertex shader.</param>
-    /// <param name="invertVertexOutputY">Indicates whether or not the compiled shader output should include a fixup at the
-    /// end of the vertex shader which inverts the clip-space Y value.</param>
-    /// <param name="normalizeResourceNames">Indicates whether all resource names should be forced into a normalized form.
-    /// This has functional impact on compilation targets where resource names are meaningful, like GLSL.</param>
-    public CrossCompileOptions(bool fixClipSpaceZ, bool invertVertexOutputY, bool normalizeResourceNames)
-        : this(fixClipSpaceZ, invertVertexOutputY, normalizeResourceNames, [])
-    {
-    }
-
-    /// <summary>
-    /// Constructs a new <see cref="CrossCompileOptions"/>, used to control the parameters of shader translation.
-    /// </summary>
-    /// <param name="fixClipSpaceZ">Indicates whether or not the compiled shader output should include a clip-space Z-range
-    /// fixup at the end of the vertex shader.</param>
-    /// <param name="invertVertexOutputY">Indicates whether or not the compiled shader output should include a fixup at the
-    /// end of the vertex shader which inverts the clip-space Y value.</param>
     /// <param name="specializations">An array of <see cref="SpecializationConstant"/> which will be substituted into the
     /// shader as new constants.</param>
     public CrossCompileOptions(bool fixClipSpaceZ, bool invertVertexOutputY, params SpecializationConstant[] specializations)
+        : this(fixClipSpaceZ, invertVertexOutputY, false, specializations)
     {
-        FixClipSpaceZ = fixClipSpaceZ;
-        InvertVertexOutputY = invertVertexOutputY;
-        Specializations = specializations;
     }
 
     /// <summary>

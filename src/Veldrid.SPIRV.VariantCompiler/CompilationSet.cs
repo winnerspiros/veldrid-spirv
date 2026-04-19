@@ -38,35 +38,30 @@ public class VariantCompiler
     {
         if (variant.Shaders.Length == 1)
         {
-            if (variant.Shaders[0].Stage == ShaderStages.Vertex) { return CompileVertexFragment(variant); }
-            if (variant.Shaders[0].Stage == ShaderStages.Compute) { return CompileCompute(variant); }
+            return variant.Shaders[0].Stage switch
+            {
+                ShaderStages.Vertex => CompileVertexFragment(variant),
+                ShaderStages.Compute => CompileCompute(variant),
+                _ => throw new SpirvCompilationException(
+                    $"Variant \"{variant.Name}\" has an unsupported combination of shader stages.")
+            };
         }
+
         if (variant.Shaders.Length == 2)
         {
-            bool hasVertex = false;
-            bool hasFragment = false;
-            foreach (var shader in variant.Shaders)
-            {
-                hasVertex |= shader.Stage == ShaderStages.Vertex;
-                hasFragment |= shader.Stage == ShaderStages.Fragment;
-            }
+            bool hasVertex = variant.Shaders.Any(s => s.Stage == ShaderStages.Vertex);
+            bool hasFragment = variant.Shaders.Any(s => s.Stage == ShaderStages.Fragment);
 
             if (!hasVertex)
-            {
                 throw new SpirvCompilationException($"Variant \"{variant.Name}\" is missing a vertex shader.");
-            }
             if (!hasFragment)
-            {
                 throw new SpirvCompilationException($"Variant \"{variant.Name}\" is missing a fragment shader.");
-            }
 
             return CompileVertexFragment(variant);
         }
-        else
-        {
-            throw new SpirvCompilationException(
-                $"Variant \"{variant.Name}\" has an unsupported combination of shader stages.");
-        }
+
+        throw new SpirvCompilationException(
+            $"Variant \"{variant.Name}\" has an unsupported combination of shader stages.");
     }
 
     private string[] CompileVertexFragment(ShaderVariantDescription variant)
@@ -115,14 +110,19 @@ public class VariantCompiler
                 compilationExceptions);
         }
 
+        if (vsBytes is null || fsBytes is null)
+        {
+            throw new SpirvCompilationException("Failed to compile vertex or fragment shader to SPIR-V.");
+        }
+
+        bool isFirstTarget = true;
         foreach (CrossCompileTarget target in variant.Targets)
         {
             try
             {
-                bool writeReflectionFile = true;
                 VertexFragmentCompilationResult result = SpirvCompilation.CompileVertexFragment(
-                    vsBytes!,
-                    fsBytes!,
+                    vsBytes,
+                    fsBytes,
                     target,
                     variant.CrossCompileOptions);
                 if (result.VertexShader != null)
@@ -138,18 +138,11 @@ public class VariantCompiler
                     generatedFiles.Add(fsPath);
                 }
 
-                if (writeReflectionFile)
+                if (isFirstTarget)
                 {
-                    writeReflectionFile = false;
+                    isFirstTarget = false;
                     string reflectionPath = Path.Combine(_outputPath, $"{variant.Name}_ReflectionInfo.json");
-
-                    JsonSerializer serializer = new();
-                    serializer.Formatting = Formatting.Indented;
-                    StringEnumConverter enumConverter = new();
-                    serializer.Converters.Add(enumConverter);
-                    using StreamWriter sw = File.CreateText(reflectionPath);
-                    using JsonTextWriter jtw = new(sw);
-                    serializer.Serialize(jtw, result.Reflection);
+                    WriteReflectionJson(reflectionPath, result.Reflection);
                     generatedFiles.Add(reflectionPath);
                 }
             }
@@ -231,14 +224,7 @@ public class VariantCompiler
                 generatedFiles.Add(csPath);
 
                 string reflectionPath = Path.Combine(_outputPath, $"{variant.Name}_ReflectionInfo.json");
-
-                JsonSerializer serializer = new();
-                serializer.Formatting = Formatting.Indented;
-                StringEnumConverter enumConverter = new();
-                serializer.Converters.Add(enumConverter);
-                using StreamWriter sw = File.CreateText(reflectionPath);
-                using JsonTextWriter jtw = new(sw);
-                serializer.Serialize(jtw, result.Reflection);
+                WriteReflectionJson(reflectionPath, result.Reflection);
                 generatedFiles.Add(reflectionPath);
             }
             catch (Exception e)
@@ -253,5 +239,14 @@ public class VariantCompiler
         }
 
         return [.. generatedFiles];
+    }
+
+    private static void WriteReflectionJson(string path, object? reflection)
+    {
+        JsonSerializer serializer = new() { Formatting = Formatting.Indented };
+        serializer.Converters.Add(new StringEnumConverter());
+        using StreamWriter sw = File.CreateText(path);
+        using JsonTextWriter jtw = new(sw);
+        serializer.Serialize(jtw, reflection);
     }
 }
