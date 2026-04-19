@@ -262,7 +262,7 @@ void SetSpecializations(spirv_cross::Compiler *compiler, const CrossCompileInfo 
 }
 
 InteropArray<ResourceLayoutDescription> CreateResourceLayoutArray(
-    std::map<BindingInfo, ResourceInfo> resources,
+    const std::map<BindingInfo, ResourceInfo> &resources,
     bool compute)
 {
     uint32_t currentSet = 0;
@@ -615,9 +615,9 @@ void WriteToFile(const std::string &path, const std::string &text)
 }
 
 CompilationResult *CompileGLSLToSPIRV(
-    const std::string sourceText,
+    const std::string &sourceText,
     shaderc_shader_kind kind,
-    std::string fileName,
+    const std::string &fileName,
     const shaderc::CompileOptions &options)
 {
     shaderc::Compiler compiler;
@@ -684,7 +684,7 @@ VD_EXPORT CompilationResult *CompileGlslToSpirv(GlslCompileInfo *info)
             std::string(info->FileName.Data, info->FileName.Count),
             options);
     }
-    catch (std::exception e)
+    catch (const std::exception &e)
     {
         return new CompilationResult(e.what());
     }

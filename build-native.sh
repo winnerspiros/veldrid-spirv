@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+set -euo pipefail
 
 scriptPath="$( cd "$(dirname "$0")" ; pwd -P )"
 _CMakeBuildType=Debug
